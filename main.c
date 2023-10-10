@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 #define LSH_RL_BUFSIZE 1024
+#define LSH_TOK_BUFSIZE 64
+#define LSH_TOK_DELIM " \t\r\n\a"
 
 void lsh_loop(void);
 char *readline(void);
+
+char **splitline(char *line);
 
 int main(int argc, char **argv)
 {
@@ -14,15 +20,39 @@ int main(int argc, char **argv)
 }
 
 
+char **splitline(char *line)
+{
+    char *token;
+    char **tokens = malloc(sizeof(char *) * BUFSIZ);
+
+    int position = 0;
+
+    token = strtok(line, LSH_TOK_DELIM);
+
+    while(token != NULL)
+    {
+        printf("%s\n", token);
+        tokens[position] = token;
+        token = strtok (NULL, LSH_TOK_DELIM);
+        position++;
+    }
+
+    return tokens;
+}
+
+
 void lsh_loop(void)
 {
     char *line;
+    char **args;
 
     line = readline();
+    
+    args = splitline(line);
 
     for (int i = 0; i < 5; i++)
     {
-        printf("%c", line[i]);
+        // printf("%c", args[i]);
     }
 
 }
