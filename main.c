@@ -14,29 +14,88 @@ void main_loop(void);
 char *read_line(void);
 char **split_line(char *line);
 int launch(char **args);
+int execute(char **args);
+
+int cd(char **args);
+int help(char **args);
+int lsh_exit(char **args);
+
+char *builtin_str[] = {
+    "cd",
+    "help",
+    "lsh_exit"
+};
+
+int (*builtin_func[])(char **) = {
+    &cd,
+    &help,
+    &lsh_exit
+};
+
 
 int main(int argc, char **argv)
 {
     main_loop();
-
     return EXIT_SUCCESS;
 }
+
 
 void main_loop(void)
 {
     char *line;
     char **args;
+    int status;
+    do
+    {
+        printf("> ");
+        line = read_line();
 
-    line = read_line();
+        args = split_line(line);
 
-    args = split_line(line);
+        status = execute(args);
+    } while (status);
+}
 
-    launch(args);
 
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     printf("%s", args[i]);
-    // }
+int num_builtins()
+{
+    return sizeof(builtin_str) / sizeof(char *);
+}
+
+int cd(char **args)
+{
+    if (args[1] == NULL)
+    {
+        fprintf(stderr, "lsh: expected argument to \"cd\"\n");
+    }
+    else
+    {
+        if (chdir(args[1]) != 0)
+        {
+            perror("lshyt");
+        }
+    }
+    return 1;
+}
+
+int help(char **args)
+{
+    int i;
+    printf("Type program names and arguments, and hit enter.\n");
+    printf("The following are built in:\n");
+
+    for (i = 0; i < num_builtins(); i++)
+    {
+        printf("  %s\n", builtin_str[i]);
+    }
+
+    printf("Use the man command for information on other programs.\n");
+    return 1;
+}
+
+int lsh_exit(char **args)
+{
+    return 0;
 }
 
 char **split_line(char *line)
@@ -135,7 +194,7 @@ int launch(char **args)
         // Child process
         if (execvp(args[0], args) == -1)
         {
-            perror("lsh");
+            perror("lshiii");
         }
 
         exit(EXIT_FAILURE);
@@ -155,4 +214,25 @@ int launch(char **args)
     }
 
     return 1;
+}
+
+int execute(char **args)
+{
+    int i;
+
+    if (args[0] == NULL)
+    {
+        // An empty command was entered.
+        return 1;
+    }
+
+    for (i = 0; i < num_builtins(); i++)
+    {
+        if (strcmp(args[0], builtin_str[i]) == 0)
+        {
+            return (*builtin_func[i])(args);
+        }
+    }
+
+    return launch(args);
 }
