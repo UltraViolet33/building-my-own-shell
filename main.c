@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -15,7 +14,6 @@ char *read_line(void);
 char **split_line(char *line);
 int launch(char **args);
 int execute(char **args);
-
 int cd(char **args);
 int help(char **args);
 int lsh_exit(char **args);
@@ -62,6 +60,7 @@ int num_builtins()
     return sizeof(builtin_str) / sizeof(char *);
 }
 
+
 int cd(char **args)
 {
     if (args[1] == NULL)
@@ -78,6 +77,7 @@ int cd(char **args)
     return 1;
 }
 
+
 int help(char **args)
 {
     int i;
@@ -93,10 +93,12 @@ int help(char **args)
     return 1;
 }
 
+
 int lsh_exit(char **args)
 {
     return 0;
 }
+
 
 char **split_line(char *line)
 {
@@ -137,6 +139,7 @@ char **split_line(char *line)
 
     return tokens;
 }
+
 
 char *read_line(void)
 {
@@ -182,6 +185,7 @@ char *read_line(void)
     }
 }
 
+
 int launch(char **args)
 {
     pid_t pid, wpid;
@@ -215,6 +219,7 @@ int launch(char **args)
 
     return 1;
 }
+
 
 int execute(char **args)
 {
